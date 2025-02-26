@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 
 const cakes = [
     { id: '1', name: 'Chocolate Cake', price: '$15', image: require('/home/amasha/WebstormProjects/cake-store-mobile/assets/chocolate.jpg') },
@@ -12,6 +14,8 @@ const cakes = [
 
 const CakePage = () => {
     const [cart, setCart] = useState<{ id: string; name: string; price: string }[]>([]);
+    const navigation = useNavigation();
+
 
     const addToCart = (cake: { id: string; name: string; price: string }) => {
         setCart((prevCart) => [...prevCart, cake]);
@@ -27,10 +31,18 @@ const CakePage = () => {
         if (cart.length === 0) {
             Alert.alert('No items in the cart', 'Please add items to the cart before placing an order.');
         } else {
-
-            Alert.alert('Order Placed', `Your order for ${cart.length} items has been placed.`);
+            navigation.navigate('placeOrder', { cart });
             setCart([]);
         }
+    };
+
+
+    // Function to calculate total price of cart items
+    const calculateTotalPrice = () => {
+        return cart.reduce((total, item) => {
+            const price = parseFloat(item.price.replace('$', ''));
+            return total + price;
+        }, 0);
     };
 
     return (
@@ -55,10 +67,10 @@ const CakePage = () => {
             />
 
 
+
             <TouchableOpacity style={styles.placeOrderButton} onPress={placeOrder}>
                 <Text style={styles.placeOrderText}>Place Order</Text>
             </TouchableOpacity>
-
 
             {cart.length > 0 && (
                 <View style={styles.cartSection}>
@@ -76,6 +88,11 @@ const CakePage = () => {
                             </TouchableOpacity>
                         </View>
                     ))}
+
+                    {/* Display total price */}
+                    {cart.length > 0 && (
+                        <Text style={styles.totalPrice}>Total Price: ${calculateTotalPrice().toFixed(2)}</Text>
+                    )}
                 </View>
             )}
         </View>
@@ -154,6 +171,13 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    totalPrice: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+        marginVertical: 15,
     },
     cartSection: {
         marginTop: 20,
