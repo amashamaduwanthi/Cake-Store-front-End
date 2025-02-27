@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+
+import Order from "../../model/PlaceOrder";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store/store";
+import { saveOrder } from "../../reducer/PlaceOrderSlice";
 
 const PlaceOrder = () => {
     const route = useRoute();
     const { cart } = route.params || { cart: [] };
 
-    // State for customer details
     const [customerName, setCustomerName] = useState('');
     const [contactNumber, setContactNumber] = useState('');
+    const [address, setAddress] = useState('');
+    const [totalPrice, setTotalPrice] = useState(0); // ✅ New state for total price
+    const dispatch = useDispatch<AppDispatch>();
 
-    // Calculate total price
+    // Function to calculate total price
     const calculateTotalPrice = () => {
         return cart.reduce((total, item) => {
             const price = parseFloat(item.price.replace('$', ''));
@@ -18,12 +25,20 @@ const PlaceOrder = () => {
         }, 0);
     };
 
-    // Handle order confirmation
+    // Update total price whenever cart changes
+    useEffect(() => {
+        setTotalPrice(calculateTotalPrice());
+    }, [cart]); // ✅ Runs when cart updates
+
     const confirmOrder = () => {
         if (!customerName.trim() || !contactNumber.trim()) {
             Alert.alert('Missing Details', 'Please enter your name and contact number.');
             return;
         }
+        const order = new Order(totalPrice,customerName, Number(contactNumber), address);
+
+        // Save order
+        dispatch(saveOrder(order));
 
         Alert.alert(
             'Order Confirmed',
@@ -43,9 +58,8 @@ const PlaceOrder = () => {
                         </Text>
                     ))}
 
-                    <Text style={styles.totalText}>Total Payment: ${calculateTotalPrice().toFixed(2)}</Text>
+                    <Text style={styles.totalText}>Total Payment: ${totalPrice.toFixed(2)}</Text> {/* ✅ Uses state */}
 
-                    {/* Customer Details Section */}
                     <View style={styles.card}>
                         <Text style={styles.sectionTitle}>Customer Details</Text>
                         <TextInput
@@ -61,9 +75,15 @@ const PlaceOrder = () => {
                             onChangeText={setContactNumber}
                             keyboardType="phone-pad"
                         />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter your Address"
+                            value={address}
+                            onChangeText={setAddress}
+                            keyboardType="phone-pad"
+                        />
                     </View>
 
-                    {/* Confirm Order Button */}
                     <TouchableOpacity style={styles.confirmButton} onPress={confirmOrder}>
                         <Text style={styles.confirmButtonText}>Confirm Order</Text>
                     </TouchableOpacity>
@@ -174,3 +194,9 @@ const styles = StyleSheet.create({
 });
 
 export default PlaceOrder;
+
+
+
+
+
+
