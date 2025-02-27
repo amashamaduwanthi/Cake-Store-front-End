@@ -8,24 +8,27 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import {User} from "../model/User";
-import {loginUser, registerUser} from "../reducer/UserSlice";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../store/store";
+import {User} from "../model/User";
+import {registerUser} from "../reducer/UserSlice";
 
-export default function Index() {
+export default function SignUp() {
     const router = useRouter();
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const dispatch = useDispatch<AppDispatch>();
 
 
 
-    function handleLogin() {
-        const user:User={email:email, password:password};
-        dispatch(loginUser(user));
-        router.replace("/dashboard");
 
+    function handleSignUp() {
+        console.log("User Registered:", { name, email, password });
+        const user:User={email:email, password:password};
+        dispatch(registerUser(user));
+
+        router.replace("/dashboard"); // Redirect to dashboard after signup
     }
 
     return (
@@ -34,11 +37,20 @@ export default function Index() {
             style={styles.gradientBackground}
         >
             <View style={styles.topContainer}>
-                <Text style={styles.titleText}>Welcome CakeStore LK</Text>
-                <Text style={styles.signInText}>Sign In</Text>
+                <Text style={styles.titleText}>Create Account</Text>
+                <Text style={styles.signInText}>Sign Up</Text>
             </View>
 
             <View style={styles.formContainer}>
+                <Text style={styles.label}>Full Name</Text>
+                <TextInput
+                    style={styles.inputField}
+                    placeholder="John Doe"
+                    placeholderTextColor="#777"
+                    onChangeText={setName}
+                    autoCapitalize="words"
+                />
+
                 <Text style={styles.label}>Email</Text>
                 <TextInput
                     style={styles.inputField}
@@ -58,26 +70,22 @@ export default function Index() {
                     onChangeText={setPassword}
                 />
 
-                <Pressable>
-                    <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-                </Pressable>
-
                 <Pressable
                     style={({ pressed }) => [
                         styles.signInButton,
                         pressed && styles.signInButtonPressed,
                     ]}
-                    onPress={handleLogin}
+                    onPress={handleSignUp}
                 >
-                    <Text style={styles.signInButtonText}>Sign In</Text>
+                    <Text style={styles.signInButtonText}>Sign Up</Text>
                 </Pressable>
             </View>
 
             <View style={styles.bottomContainer}>
                 <View style={styles.signUpContainer}>
-                    <Text style={styles.signUpPrompt}>Don’t have an account?</Text>
-                    <Pressable onPress={() => router.push("/SignUp")}>
-                        <Text style={styles.signUpText}>Sign Up</Text>
+                    <Text style={styles.signUpPrompt}>Already have an account?</Text>
+                    <Pressable onPress={() => router.push("/")}>
+                        <Text style={styles.signUpText}>Sign In</Text>
                     </Pressable>
                 </View>
             </View>
@@ -151,12 +159,6 @@ const styles = StyleSheet.create({
         color: "#333",
         marginBottom: 25,
     },
-    forgotPasswordText: {
-        alignSelf: "flex-end",
-        color: "#FF6B6B",
-        marginBottom: 30,
-        fontSize: 14,
-    },
     signInButton: {
         backgroundColor: "#FF6B6B",
         paddingVertical: 20,
@@ -173,3 +175,4 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 });
+
