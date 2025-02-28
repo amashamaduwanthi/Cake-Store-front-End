@@ -25,6 +25,13 @@ const PlaceOrder = () => {
         }, 0);
     };
 
+    // const calculateTotalPrice = () => {
+    //     return cart.reduce((total, item) => {
+    //         return total + (item.price || 0);
+    //     }, 0);
+    // };
+
+
     // Update total price whenever cart changes
     useEffect(() => {
         setTotalPrice(calculateTotalPrice());

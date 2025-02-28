@@ -28,7 +28,7 @@ export default function SignUp() {
         const user:User={email:email, password:password};
         dispatch(registerUser(user));
 
-        router.replace("/dashboard"); // Redirect to dashboard after signup
+        router.push('/dashboard/dashboard');
     }
 
     return (

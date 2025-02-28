@@ -24,7 +24,7 @@ export default function Index() {
     function handleLogin() {
         const user:User={email:email, password:password};
         dispatch(loginUser(user));
-        router.replace("/dashboard");
+        router.push('/dashboard/dashboard');
 
     }
 

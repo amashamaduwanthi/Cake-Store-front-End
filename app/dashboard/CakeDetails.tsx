@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import {router} from "expo-router";
 
 
 const cakes = [
@@ -31,7 +32,7 @@ const CakePage = () => {
         if (cart.length === 0) {
             Alert.alert('No items in the cart', 'Please add items to the cart before placing an order.');
         } else {
-            navigation.navigate('placeOrder', { cart });
+            navigation.navigate('placeOrder', { cart });// ✅ Ensure name matches Stack.Screen
             setCart([]);
         }
     };
